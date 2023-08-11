@@ -1,0 +1,44 @@
+[package]
+name = "wrecv"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+cookie_store = { version = "0.20.0", features = ["preserve_order"] }
+curl = { version = "0.4.44", default-features = false, features = ["rustls", "static-curl", "protocol-ftp"] }
+httparse = "1.8.0"
+regex = "1.9.3"
+semver = "1.0.18"
+serde = { version = "1.0.183", features = ["derive"] }
+serde_json = "1.0.104"
+thiserror = "1.0.43"
+tracing = "0.1.37"
+trust-dns-resolver = { version = "0.22.0", default-features = false, features = ["dns-over-https-rustls", "tokio-runtime"] }
+url = "2.4.0"
+
+# 'bin' dependencies:
+anyhow = { version = "1.0.72", optional = true }
+clap = { version = "4.3.21", optional = true, features = ["derive"]}
+reopen = { version = "1.0.3", optional = true, features = ["signals"] }
+signal-hook = { version = "0.3.17", optional = true }
+tracing-journald = { version = "0.3.0", optional = true }
+tracing-subscriber = { version = "0.3.17", optional = true, features = ["json"] }
+
+[features]
+default = []
+bin = [
+    "dep:anyhow",
+    "dep:clap",
+    "dep:reopen",
+    "dep:signal-hook",
+    "dep:tracing-journald",
+    "dep:tracing-subscriber",
+]
+
+[dev-dependencies]
+tracing-test = { version = "0.2.4", features = ["no-env-filter"] }
+
+[[bin]]
+name = "wrecv"
+path = "src/main.rs"
+required-features = ["bin"]
