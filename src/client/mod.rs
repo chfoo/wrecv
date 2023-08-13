@@ -55,7 +55,7 @@ impl Client {
         handler: H,
     ) -> (H, Result<(), Error>) {
         let url = request.url().as_str();
-        let span = tracing::info_span!("client session", url);
+        let span = tracing::info_span!("client_session", url);
         let _guard = span.enter();
 
         let mut session = match request.url().scheme() {

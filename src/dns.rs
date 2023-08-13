@@ -118,7 +118,7 @@ impl Resolver {
     }
 
     pub fn lookup_ip_address<S: AsRef<str>>(&self, name: S) -> Result<IpAddressLookup, Error> {
-        let span = tracing::info_span!("resolver lookup IP address", name = name.as_ref());
+        let span = tracing::info_span!("resolver_lookup_ip_address", name = name.as_ref());
         let _guard = span.enter();
 
         tracing::debug!("lookup IP address start");

@@ -4,19 +4,14 @@ use wrecv::client::{Client, Config, Request, SessionControl, SessionEvent, Sessi
 
 #[tracing_test::traced_test]
 #[test]
-fn test_client() {
-    let mut server = common::mock_http_server();
-    server.run_background().unwrap();
+fn test_client_http() {
+    let mut server = common::http::run_test_server();
 
     let mut config = Config::new();
     config.set_http_09(true).set_http_cookies(true);
 
     let client = Client::new(config);
-    let request = Request::new(
-        format!("http://{}/index.html", server.address())
-            .parse()
-            .unwrap(),
-    );
+    let request = Request::new(format!("http://{}/", server.address()).parse().unwrap());
 
     struct MyHandler;
 
@@ -28,7 +23,7 @@ fn test_client() {
         ) -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
             match event {
                 SessionEvent::HttpRequest(_data, request) => {
-                    assert_eq!(&request.uri, "/index.html");
+                    assert_eq!(&request.uri, "/");
                 }
                 SessionEvent::HttpResponse(_data, response) => {
                     assert_eq!(response.status_code, 200);
@@ -41,6 +36,27 @@ fn test_client() {
             Ok(())
         }
     }
+
+    let handler = MyHandler;
+    let (_handler, result) = client.submit(request, handler);
+    result.unwrap();
+
+    server.close();
+}
+
+#[tracing_test::traced_test]
+#[test]
+fn test_client_ftp() {
+    let mut server = common::ftp::run_test_server();
+
+    let config = Config::new();
+
+    let client = Client::new(config);
+    let request = Request::new(format!("ftp://{}/", server.address()).parse().unwrap());
+
+    struct MyHandler;
+
+    impl SessionHandler for MyHandler {}
 
     let handler = MyHandler;
     let (_handler, result) = client.submit(request, handler);

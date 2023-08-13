@@ -53,5 +53,9 @@ pub fn set_up_logging(args: &ProgramArgs) -> anyhow::Result<()> {
 
     tracing::subscriber::set_global_default(subscriber)?;
 
+    if args.log_level == LevelFilter::TRACE {
+        tracing_log::LogTracer::init()?;
+    }
+
     Ok(())
 }
